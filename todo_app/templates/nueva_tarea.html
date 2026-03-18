@@ -1,0 +1,76 @@
+{# ============================================================
+   templates/nueva_tarea.html  –  Formulario para crear tareas
+   Hereda de base.html (concepto 11)
+   Demuestra cómo enviar datos con un formulario (concepto 13)
+   ============================================================ #}
+{% extends "base.html" %}
+
+{% block titulo %}Nueva Tarea{% endblock %}
+
+{% block contenido %}
+
+  <section class="encabezado">
+    <h1>➕ Nueva Tarea</h1>
+    <p class="subtitulo">Completa el formulario para agregar una tarea a tu lista.</p>
+  </section>
+
+  <!-- ======================================================
+       FORMULARIO (concepto 13)
+       action → ruta que procesa el formulario
+       method="post" → envía los datos de forma segura
+       ====================================================== -->
+  <div class="tarjeta formulario-tarjeta">
+    <form action="{{ url_for('nueva_tarea') }}" method="post">
+
+      <!-- Campo: Título (obligatorio) -->
+      <div class="campo">
+        <label for="titulo">📝 Título <span class="requerido">*</span></label>
+        <input
+          type="text"
+          id="titulo"
+          name="titulo"
+          placeholder="Ej: Estudiar plantillas Jinja2"
+          required
+          autofocus
+        />
+        <small>El título es obligatorio.</small>
+      </div>
+
+      <!-- Campo: Descripción (opcional) -->
+      <div class="campo">
+        <label for="descripcion">📄 Descripción (opcional)</label>
+        <textarea
+          id="descripcion"
+          name="descripcion"
+          rows="3"
+          placeholder="Ej: Revisar la documentación oficial de Flask..."
+        ></textarea>
+      </div>
+
+      <!-- Botones -->
+      <div class="campo campo--acciones">
+        <button type="submit" class="btn btn--primario">
+          ✅ Guardar tarea
+        </button>
+        <a href="{{ url_for('lista_tareas') }}" class="btn btn--gris">
+          ✖ Cancelar
+        </a>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- ======================================================
+       NOTA EDUCATIVA: explica qué pasa cuando se envía el form
+       ====================================================== -->
+  <div class="nota-educativa">
+    <h3>💡 ¿Qué sucede al enviar el formulario?</h3>
+    <ol>
+      <li>El navegador envía los datos con método <code>POST</code> a <code>/tareas/nueva</code>.</li>
+      <li>Flask recibe los datos en <code>request.form</code>.</li>
+      <li>La función <code>nueva_tarea()</code> los lee con <code>request.form.get("titulo")</code>.</li>
+      <li>La tarea se guarda en la lista y se redirige al inicio.</li>
+    </ol>
+  </div>
+
+{% endblock %}

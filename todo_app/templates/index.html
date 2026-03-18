@@ -1,0 +1,71 @@
+{# ============================================================
+   templates/index.html  –  Página principal: lista de tareas
+   Hereda de base.html (concepto 11)
+   Muestra datos dinámicos: lista, contadores (concepto 12)
+   ============================================================ #}
+{% extends "base.html" %}
+
+{% block titulo %}Mis Tareas{% endblock %}
+
+{% block contenido %}
+
+  <!-- Encabezado con datos dinámicos (concepto 12) -->
+  <section class="encabezado">
+    <h1>📋 Mis Tareas</h1>
+    <p class="subtitulo">
+      Tienes <strong>{{ total }}</strong> tarea(s) en total &mdash;
+      <span class="badge badge--verde">{{ completadas }} completadas</span>
+      <span class="badge badge--naranja">{{ pendientes }} pendientes</span>
+    </p>
+    <a href="{{ url_for('nueva_tarea') }}" class="btn btn--primario">
+      ➕ Agregar nueva tarea
+    </a>
+  </section>
+
+  <!-- Lista dinámica de tareas (concepto 12) -->
+  {% if tareas %}
+    <ul class="lista-tareas">
+      {% for tarea in tareas %}
+        <li class="tarea {% if tarea.completada %}tarea--completada{% endif %}">
+
+          <!-- Información de la tarea -->
+          <div class="tarea__info">
+            <span class="tarea__icono">
+              {% if tarea.completada %}✅{% else %}⬜{% endif %}
+            </span>
+            <div>
+              <strong class="tarea__titulo">{{ tarea.titulo }}</strong>
+              {% if tarea.descripcion %}
+                <p class="tarea__desc">{{ tarea.descripcion }}</p>
+              {% endif %}
+            </div>
+          </div>
+
+          <!-- Acciones: completar y eliminar -->
+          <div class="tarea__acciones">
+            <a href="{{ url_for('completar_tarea', tarea_id=tarea.id) }}"
+               class="btn btn--pequeño {% if tarea.completada %}btn--gris{% else %}btn--verde{% endif %}">
+              {% if tarea.completada %}↩ Deshacer{% else %}✔ Completar{% endif %}
+            </a>
+            <a href="{{ url_for('eliminar_tarea', tarea_id=tarea.id) }}"
+               class="btn btn--pequeño btn--rojo"
+               onclick="return confirm('¿Seguro que deseas eliminar esta tarea?')">
+              🗑 Eliminar
+            </a>
+          </div>
+
+        </li>
+      {% endfor %}
+    </ul>
+
+  {% else %}
+    <!-- Mensaje cuando no hay tareas -->
+    <div class="vacio">
+      <p>🎉 ¡No tienes tareas pendientes!</p>
+      <a href="{{ url_for('nueva_tarea') }}" class="btn btn--primario">
+        Crear la primera tarea
+      </a>
+    </div>
+  {% endif %}
+
+{% endblock %}

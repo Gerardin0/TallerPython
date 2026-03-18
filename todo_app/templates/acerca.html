@@ -1,0 +1,80 @@
+{# ============================================================
+   templates/acerca.html  –  Página "Acerca del proyecto"
+   Segunda página que hereda de base.html (concepto 11)
+   Muestra datos dinámicos pasados desde app.py (concepto 12)
+   ============================================================ #}
+{% extends "base.html" %}
+
+{% block titulo %}Acerca del Proyecto{% endblock %}
+
+{% block contenido %}
+
+  <section class="encabezado">
+    <h1>ℹ️ Acerca del Proyecto</h1>
+    <p class="subtitulo">Información sobre esta aplicación educativa.</p>
+  </section>
+
+  <!-- Tarjeta con datos dinámicos (concepto 12) -->
+  <div class="tarjeta">
+    <h2>📦 {{ info.nombre }}</h2>
+
+    <table class="tabla-info">
+      <tbody>
+        <tr>
+          <th>Versión</th>
+          <td>{{ info.version }}</td>
+        </tr>
+        <tr>
+          <th>Autor</th>
+          <td>{{ info.autor }}</td>
+        </tr>
+        <tr>
+          <th>Tecnologías</th>
+          <td>
+            <!-- Iteramos sobre una lista con un bucle for de Jinja2 -->
+            {% for tech in info.tecnologias %}
+              <span class="badge badge--azul">{{ tech }}</span>
+            {% endfor %}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Sección educativa: estructura del proyecto -->
+  <div class="tarjeta">
+    <h2>📁 Estructura del Proyecto</h2>
+    <pre class="codigo-bloque">
+todo_app/
+├── app.py                 ← Archivo principal (rutas y lógica)
+├── requirements.txt       ← Dependencias del proyecto
+├── templates/
+│   ├── base.html          ← Plantilla base (navbar + footer)
+│   ├── index.html         ← Lista de tareas (hereda base)
+│   ├── nueva_tarea.html   ← Formulario  (hereda base)
+│   └── acerca.html        ← Esta página (hereda base)
+└── static/
+    ├── css/
+    │   └── estilos.css    ← Estilos de la aplicación
+    └── js/
+        └── main.js        ← JavaScript opcional
+    </pre>
+  </div>
+
+  <!-- Sección de conceptos cubiertos -->
+  <div class="tarjeta">
+    <h2>🎓 Conceptos cubiertos</h2>
+    <ul class="lista-conceptos">
+      <li>✅ Crear y ejecutar una aplicación Flask</li>
+      <li>✅ Definir rutas con <code>@app.route()</code></li>
+      <li>✅ Usar <code>render_template()</code> para HTML dinámico</li>
+      <li>✅ Plantilla base con <code>{% raw %}{% block %}{% endraw %}</code></li>
+      <li>✅ Herencia de plantillas con <code>{% raw %}{% extends %}{% endraw %}</code></li>
+      <li>✅ Mostrar datos dinámicos en la vista</li>
+      <li>✅ Procesar formularios con <code>request.form</code></li>
+      <li>✅ Redirecciones con <code>redirect()</code> y <code>url_for()</code></li>
+      <li>⬜ Próximo paso: conectar SQLite con <code>sqlite3</code> o <code>Flask-SQLAlchemy</code></li>
+    </ul>
+  </div>
+
+{% endblock %}

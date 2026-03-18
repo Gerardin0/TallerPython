@@ -1,0 +1,71 @@
+{# ============================================================
+   templates/base.html  –  Plantilla base (concepto 10)
+   Todas las páginas heredan de esta plantilla.
+   Define la estructura HTML común: head, navbar, footer.
+   Los bloques ({% block %}) son los "huecos" que cada página
+   puede rellenar con su propio contenido.
+   ============================================================ #}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  {# Bloque de título: cada página puede personalizar el <title> #}
+  <title>{% block titulo %}TodoFlask{% endblock %} · TodoFlask</title>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/estilos.css') }}" />
+
+  {# Bloque de estilos extra: las páginas pueden agregar sus propios #}
+  {% block estilos_extra %}{% endblock %}
+</head>
+
+<body>
+
+  <!-- ====================================================
+       NAVEGACIÓN COMÚN (presente en todas las páginas)
+       ==================================================== -->
+  <nav class="navbar">
+    <a class="navbar__logo" href="{{ url_for('inicio') }}">
+      ✅ TodoFlask
+    </a>
+    <ul class="navbar__links">
+      <li>
+        <a href="{{ url_for('lista_tareas') }}"
+           class="{% if request.endpoint == 'lista_tareas' %}activo{% endif %}">
+          📋 Tareas
+        </a>
+      </li>
+      <li>
+        <a href="{{ url_for('nueva_tarea') }}"
+           class="{% if request.endpoint == 'nueva_tarea' %}activo{% endif %}">
+          ➕ Nueva tarea
+        </a>
+      </li>
+      <li>
+        <a href="{{ url_for('acerca') }}"
+           class="{% if request.endpoint == 'acerca' %}activo{% endif %}">
+          ℹ️ Acerca
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- ====================================================
+       CONTENIDO PRINCIPAL
+       Cada página rellena este bloque con su contenido.
+       ==================================================== -->
+  <main class="contenedor">
+    {% block contenido %}{% endblock %}
+  </main>
+
+  <!-- ====================================================
+       PIE DE PÁGINA COMÚN
+       ==================================================== -->
+  <footer class="footer">
+    <p>Proyecto educativo Flask &mdash; Python para estudiantes 🐍</p>
+  </footer>
+
+  {% block scripts_extra %}{% endblock %}
+</body>
+</html>
