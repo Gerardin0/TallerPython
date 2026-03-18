@@ -2,13 +2,6 @@
 #  app.py  –  Archivo principal de la aplicación Flask
 #  Proyecto: Lista de Tareas (To-Do List)
 # ============================================================
-#
-#  CONCEPTOS QUE CUBRE ESTE ARCHIVO:
-#   6. Definir rutas que responden con texto o HTML
-#   7. Ejecutar el servidor y ver la respuesta en el navegador
-#   8. Modificar la respuesta y observar el cambio en tiempo real
-#  13. Recibir datos de un formulario y mostrarlos
-# ============================================================
 
 from flask import Flask, render_template, request, redirect, url_for
 

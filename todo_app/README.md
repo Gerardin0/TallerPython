@@ -42,22 +42,8 @@ http://127.0.0.1:5000
 > **Tip:** Con `debug=True` el servidor se recarga automáticamente cada
 > vez que guardas `app.py`. ¡Modifica una respuesta y observa el cambio!
 
----
 
-## 📚 Conceptos cubiertos
 
-| # | Concepto                                | Archivo              |
-|---|------------------------------------------|----------------------|
-| 6 | Definir rutas con `@app.route()`         | `app.py`             |
-| 7 | Ejecutar el servidor y ver en navegador  | `app.py`             |
-| 8 | Modificar y observar cambios en tiempo real | `app.py` + `debug=True` |
-| 9 | Estructura de carpetas para Flask        | Directorio raíz      |
-|10 | Plantilla base con navbar y footer       | `base.html`          |
-|11 | Páginas que heredan de la base           | `index.html`, `acerca.html` |
-|12 | Mostrar datos dinámicos (lista, contadores) | `index.html`, `acerca.html` |
-|13 | Formulario y mostrar lo que el usuario envió | `nueva_tarea.html` |
-
----
 
 ## ➡️ Próximo paso: conectar SQLite
 
