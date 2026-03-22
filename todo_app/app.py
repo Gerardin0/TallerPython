@@ -4,25 +4,38 @@
 # ============================================================
 
 from flask import Flask, render_template, request, redirect, url_for
-
+#importamos sqlite3 para manejar la base de datos
+import sqlite3
 # ----------------------------------------------------------
 # 1. Crear la aplicación Flask
 # ----------------------------------------------------------
 app = Flask(__name__)
 
-# ----------------------------------------------------------
-# 2. "Base de datos" temporal en memoria (lista de diccionarios)
-#    En un proyecto real, esto se reemplazaría por SQLite.
-#    Cada tarea tiene: id, título, descripción y estado.
-# ----------------------------------------------------------
-tareas = [
-    {"id": 1, "titulo": "Aprender Flask",       "descripcion": "Estudiar rutas y plantillas", "completada": False},
-    {"id": 2, "titulo": "Crear un proyecto",    "descripcion": "Aplicar lo aprendido",        "completada": False},
-    {"id": 3, "titulo": "Conectar SQLite",       "descripcion": "Persistir datos en disco",   "completada": False},
-]
+def obtener_conexion():
+    conn = sqlite3.connect('tareas.db')
+    # Esto permite acceder a las columnas por nombre 
+    # Hace que se comporte igual que tu lista de diccionarios anterior
+    conn.row_factory = sqlite3.Row 
+    return conn
+
+
+## Funcion que crea la tabla, verifica si existe y si no la crea, se llama al iniciar la app
+
+def inicializar_bd():
+    conn = obtener_conexion()
+    conn.execute('''
+        CREATE TABLE IF NOT EXISTS tareas (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            titulo TEXT NOT NULL,
+            descripcion TEXT,
+            completada BOOLEAN NOT NULL DEFAULT 0
+        )
+    ''')
+    conn.commit()
+    conn.close()
 
 # Contador global para asignar IDs únicos a cada tarea nueva
-siguiente_id = 4
+siguiente_id = 0
 
 
 # ===========================================================
@@ -44,14 +57,24 @@ def inicio():
 # ----------------------------------------------------------
 @app.route("/tareas")
 def lista_tareas():
-    total      = len(tareas)
-    completadas = sum(1 for t in tareas if t["completada"])
+    ## obtenemos una conexión a la base de datos y obtenemos las tareas guardadas
+    conn = obtener_conexion()
+    # Obtenemos todas las tareas de la base de datos
+    
+    # se guarda la lista de tareas como un array de diccionarios.
+    # ferchall() devuelve una lista de filas, cada fila es un diccionario gracias a row_factory
+    # row_factory es una función que le dice a SQLite cómo formatear los resultados de las consultas.
+    tareas_bd = conn.execute('SELECT * FROM tareas').fetchall()
+    # se cierra la conexion para liberar recursos
+    conn.close()
+    total      = len(tareas_bd)
+    completadas = sum(1 for t in tareas_bd if t["completada"])
     pendientes  = total - completadas
 
     # Pasamos datos dinámicos a la plantilla (concepto 12)
     return render_template(
         "index.html",
-        tareas=tareas,
+        tareas=tareas_bd,
         total=total,
         completadas=completadas,
         pendientes=pendientes,
@@ -72,15 +95,15 @@ def nueva_tarea():
         titulo      = request.form.get("titulo", "").strip()
         descripcion = request.form.get("descripcion", "").strip()
 
-        if titulo:                          # Validación mínima
-            tarea_nueva = {
-                "id":          siguiente_id,
-                "titulo":      titulo,
-                "descripcion": descripcion,
-                "completada":  False,
-            }
-            tareas.append(tarea_nueva)
-            siguiente_id += 1
+        if titulo:
+            conn = obtener_conexion()
+            # los ?  son marcadores por posicion
+            conn.execute(
+                'INSERT INTO tareas (titulo, descripcion, completada) VALUES (?, ?, ?)',
+                (titulo, descripcion, False)
+            )
+            conn.commit()
+            conn.close()
 
         return redirect(url_for("lista_tareas"))
 
@@ -93,11 +116,12 @@ def nueva_tarea():
 # ----------------------------------------------------------
 @app.route("/tareas/<int:tarea_id>/completar")
 def completar_tarea(tarea_id):
-    for tarea in tareas:
-        if tarea["id"] == tarea_id:
-            tarea["completada"] = not tarea["completada"]   # Toggle
-            break
+    conn = obtener_conexion()
+    conn.execute('UPDATE tareas SET completada = NOT completada WHERE id = ?', (tarea_id,))
+    conn.commit()
+    conn.close()
     return redirect(url_for("lista_tareas"))
+    
 
 
 # ----------------------------------------------------------
@@ -105,8 +129,10 @@ def completar_tarea(tarea_id):
 # ----------------------------------------------------------
 @app.route("/tareas/<int:tarea_id>/eliminar")
 def eliminar_tarea(tarea_id):
-    global tareas
-    tareas = [t for t in tareas if t["id"] != tarea_id]
+    conn = obtener_conexion()
+    conn.execute('DELETE FROM tareas WHERE id = ?', (tarea_id,))
+    conn.commit()
+    conn.close()
     return redirect(url_for("lista_tareas"))
 
 
@@ -130,4 +156,5 @@ def acerca():
 #  debug=True → recarga automática al guardar (concepto 8)
 # ===========================================================
 if __name__ == "__main__":
+    inicializar_bd() # llamamos al iniciar la app para asegurarnos que la tabla exista  
     app.run(debug=True)

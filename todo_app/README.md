@@ -7,11 +7,12 @@ aprender los conceptos fundamentales del desarrollo web backend.
 
 ## 🗂 Estructura del proyecto
 
-```
+```text
 todo_app/
-├── app.py                 ← Punto de entrada y rutas
-├── requirements.txt       ← Dependencias
+├── app.py                 ← Punto de entrada y rutas (lógica principal)
+├── requirements.txt       ← Dependencias del proyecto
 ├── README.md              ← Este archivo
+├── tareas.db              ← Base de datos SQLite (se genera automáticamente)
 ├── templates/
 │   ├── base.html          ← Plantilla base (navbar, footer)
 │   ├── index.html         ← Lista de tareas
@@ -22,6 +23,7 @@ todo_app/
     │   └── estilos.css    ← Hoja de estilos
     └── js/
         └── (vacío — para código JavaScript futuro)
+
 ```
 
 ---
@@ -45,32 +47,33 @@ http://127.0.0.1:5000
 
 
 
-## ➡️ Próximo paso: conectar SQLite
+## ➡️ Conexión a SQLite (Base de Datos)
 
-Cuando estés listo, reemplaza la lista `tareas` en `app.py` por una
-base de datos real. Aquí una guía rápida:
+El proyecto utiliza el módulo nativo sqlite3 de Python para persistir las tareas en disco, reemplazando las listas temporales en memoria.
+
+La base de datos se inicializa automáticamente al arrancar la aplicación con esta estructura:
 
 ```python
 import sqlite3
 
-def get_db():
+def obtener_conexion():
     conn = sqlite3.connect("tareas.db")
-    conn.row_factory = sqlite3.Row   # Acceso por nombre de columna
+    # row_factory permite acceder a las columnas por su nombre (ej. fila['titulo'])
+    conn.row_factory = sqlite3.Row   
     return conn
 
-def init_db():
-    db = get_db()
-    db.execute("""
+def inicializar_bd():
+    conn = obtener_conexion()
+    conn.execute("""
         CREATE TABLE IF NOT EXISTS tareas (
             id          INTEGER PRIMARY KEY AUTOINCREMENT,
             titulo      TEXT    NOT NULL,
             descripcion TEXT,
-            completada  INTEGER DEFAULT 0
+            completada  BOOLEAN NOT NULL DEFAULT 0
         )
     """)
-    db.commit()
-    db.close()
+    conn.commit()
+    conn.close()
 ```
 
-Llama a `init_db()` una vez al inicio y luego reemplaza las operaciones
-sobre la lista por consultas SQL (`SELECT`, `INSERT`, `UPDATE`, `DELETE`).
+
